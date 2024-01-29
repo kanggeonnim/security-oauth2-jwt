@@ -1,4 +1,4 @@
-package com.example.springsecurity3.model;
+package com.example.springsecurity3.dto;
 
 import java.sql.Timestamp;
 

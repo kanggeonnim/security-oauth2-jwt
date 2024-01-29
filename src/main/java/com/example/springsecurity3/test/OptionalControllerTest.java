@@ -1,9 +1,6 @@
 package com.example.springsecurity3.test;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import com.example.springsecurity3.model.User;
+import com.example.springsecurity3.dto.User;
 import com.example.springsecurity3.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

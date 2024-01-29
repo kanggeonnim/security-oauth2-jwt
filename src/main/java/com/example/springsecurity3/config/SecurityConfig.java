@@ -1,8 +1,9 @@
 package com.example.springsecurity3.config;
 
 import com.example.springsecurity3.config.oauth.PrincipalOauth2UserService;
-import com.example.springsecurity3.jwt.JwtAuthorizationFilter;
 import com.example.springsecurity3.jwt.JwtSuccessHandler;
+import com.example.springsecurity3.jwt.JwtUtil;
+import com.example.springsecurity3.jwt.MyAuthenticationFailureHandler;
 import com.example.springsecurity3.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class SecurityConfig {
 
 	private final PrincipalOauth2UserService principalOauth2UserService;
 	private final UserRepository userRepository;
+	private final JwtSuccessHandler jwtSuccessHandler;
+
 	@Bean
 	public BCryptPasswordEncoder encodePwd() {
 		return new BCryptPasswordEncoder();
@@ -56,14 +59,9 @@ public class SecurityConfig {
 								.userInfoEndpoint(userInfoEndpointConfig ->
 										userInfoEndpointConfig
 												.userService(principalOauth2UserService))
-								.successHandler(new JwtSuccessHandler()))
-				.addFilterBefore(new JwtAuthorizationFilter(userRepository), UsernamePasswordAuthenticationFilter.class);
+								.successHandler(jwtSuccessHandler));
+//								.failureHandler(new MyAuthenticationFailureHandler()));
+//				.addFilterBefore(new JwtAuthorizationFilter(userRepository), UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
-
-	@Bean
-	public AuthenticationSuccessHandler authenticationSuccessHandler(){
-		return new JwtSuccessHandler();
-	}
-
 }

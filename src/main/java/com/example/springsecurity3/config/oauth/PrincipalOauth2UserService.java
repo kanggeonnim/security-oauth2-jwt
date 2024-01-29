@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import com.example.springsecurity3.config.auth.PrincipalDetails;
 import com.example.springsecurity3.config.oauth.provider.*;
-import com.example.springsecurity3.model.User;
+import com.example.springsecurity3.dto.User;
 import com.example.springsecurity3.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -38,11 +38,11 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 		// Attribute를 파싱해서 공통 객체로 묶는다. 관리가 편함.
 		OAuth2UserInfo oAuth2UserInfo = null;
 		if (userRequest.getClientRegistration().getRegistrationId().equals("google")) {
-			System.out.println("구글 로그인 요청~~");
+			System.out.println("구글 로그인 요청");
 			System.out.println(oAuth2User.getAttributes());
 			oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
 		} else if (userRequest.getClientRegistration().getRegistrationId().equals("kakao")) {
-			System.out.println("카카오 로그인 요청~~");
+			System.out.println("카카오 로그인 요청");
 //			System.out.println(((Map)oAuth2User.getAttributes().get("properties")));
 //			System.out.println(((Map)oAuth2User.getAttributes().get("kakao_account")));
 //			System.out.println(((Map)((Map)oAuth2User.getAttributes().get("properties")).get("kakao_account")).get("email"));

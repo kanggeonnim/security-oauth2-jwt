@@ -2,9 +2,8 @@ package com.example.springsecurity3.repository;
 
 import java.util.Optional;
 
-import com.example.springsecurity3.model.User;
+import com.example.springsecurity3.dto.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 
 /**

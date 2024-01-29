@@ -3,7 +3,7 @@ package com.example.springsecurity3.controller;
 import java.util.Iterator;
 
 import com.example.springsecurity3.config.auth.PrincipalDetails;
-import com.example.springsecurity3.model.User;
+import com.example.springsecurity3.dto.User;
 import com.example.springsecurity3.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;

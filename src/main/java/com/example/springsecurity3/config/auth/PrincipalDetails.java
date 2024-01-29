@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import com.example.springsecurity3.model.User;
+import com.example.springsecurity3.dto.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-
-import lombok.Data;
 
 // Authentication 객체에 저장할 수 있는 유일한 타입
 public class PrincipalDetails implements UserDetails, OAuth2User{
