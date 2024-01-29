@@ -68,3 +68,7 @@ spring:
             scope:
               - email
               - profile
+
+  config:
+    import:
+      - application-app.yml

@@ -18,11 +18,9 @@ public class RefreshTokenService {
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public void removeRefreshToken(String accessToken, User userDto) {
+    public void removeRefreshToken(String accessToken) {
         RefreshToken token = tokenRepository.findByAccessToken(accessToken)
                 .orElseThrow(IllegalArgumentException::new);
-
-        String id = String.valueOf(userDto.getId());
 
         tokenRepository.delete(token);
     }

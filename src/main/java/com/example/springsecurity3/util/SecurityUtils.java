@@ -9,7 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public abstract class SecurityUtils {
 
     public static String getUserId() {
-        return ((User)(SecurityContextHolder.getContext().getAuthentication().getPrincipal())).getEmail();
+        return ((User)(SecurityContextHolder.getContext().getAuthentication().getPrincipal())).getUsername();
     }
 
     public static User getUser() {

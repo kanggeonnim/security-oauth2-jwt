@@ -1,6 +1,7 @@
 package com.example.springsecurity3.config;
 
 import com.example.springsecurity3.config.oauth.PrincipalOauth2UserService;
+import com.example.springsecurity3.jwt.JwtAuthorizationFilter;
 import com.example.springsecurity3.jwt.JwtSuccessHandler;
 import com.example.springsecurity3.jwt.JwtUtil;
 import com.example.springsecurity3.jwt.MyAuthenticationFailureHandler;
@@ -12,6 +13,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -22,8 +25,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
 	private final PrincipalOauth2UserService principalOauth2UserService;
-	private final UserRepository userRepository;
 	private final JwtSuccessHandler jwtSuccessHandler;
+	private final MyAuthenticationFailureHandler myAuthenticationFailureHandler;
+	private final JwtAuthorizationFilter jwtAuthorizationFilter;
 
 	@Bean
 	public BCryptPasswordEncoder encodePwd() {
@@ -34,9 +38,13 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 				.csrf(AbstractHttpConfigurer::disable)
+				.httpBasic(AbstractHttpConfigurer::disable)
 				.headers((headers)->
-					headers.contentTypeOptions(contentTypeOptionsConfig ->
-							headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)))
+						headers.contentTypeOptions(contentTypeOptionsConfig ->
+								headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)))
+				.formLogin(AbstractHttpConfigurer::disable) // form 로그인 비활성화
+				.sessionManagement(sessionManagement->sessionManagement
+						.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeRequests(authorize ->
 								authorize
 						.requestMatchers("/user/**").authenticated()
@@ -46,22 +54,13 @@ public class SecurityConfig {
 						// hasRole('ROLE_USER')")
 						.requestMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
 						.anyRequest().permitAll())
-		//				.and()
-		//				.formLogin()
-		//				.loginPage("/login")
-		//				.loginProcessingUrl("/loginProc")
-		//				.defaultSuccessUrl("/")
-		//				.and()
-//				.addFilterAt(new JwtSuccessHandler(), UsernamePasswordAuthenticationFilter.class)
 				.oauth2Login(oauth->
 						oauth
 								.loginPage("/login")
-								.userInfoEndpoint(userInfoEndpointConfig ->
-										userInfoEndpointConfig
-												.userService(principalOauth2UserService))
-								.successHandler(jwtSuccessHandler));
-//								.failureHandler(new MyAuthenticationFailureHandler()));
-//				.addFilterBefore(new JwtAuthorizationFilter(userRepository), UsernamePasswordAuthenticationFilter.class);
+								.userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(principalOauth2UserService))
+								.successHandler(jwtSuccessHandler)
+								.failureHandler(myAuthenticationFailureHandler))
+				.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 }

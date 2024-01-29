@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "spring.jwt")
 public class JwtProperties {
 	private String secret;
-	private String haederRefresh;
-	private String haederAccess;
+	private String headerRefresh;
+	private String headerAccess;
 	private String tokenPrefix;
 }
