@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -30,8 +31,10 @@ public class IndexController {
 	}
 
 	@GetMapping("/user")
+	@Transactional
 	public @ResponseBody String user(@AuthenticationPrincipal PrincipalDetails principal) {
-		System.out.println("Principal : " + principal);
+		System.out.println("Principal : " + principal.getAuthorities());
+		System.out.println("Principal : " + principal.getUser().get);
 		System.out.println("OAuth2 : "+principal.getUser().getProvider());
 		// iterator 순차 출력 해보기
 		Iterator<? extends GrantedAuthority> iter = principal.getAuthorities().iterator();
@@ -66,14 +69,4 @@ public class IndexController {
 		return "join";
 	}
 
-	@PostMapping("/joinProc")
-	public String joinProc(User user) {
-		System.out.println("회원가입 진행 : " + user);
-		String rawPassword = user.getPassword();
-		String encPassword = bCryptPasswordEncoder.encode(rawPassword);
-		user.setPassword(encPassword);
-		user.setRole("ROLE_USER");
-		userRepository.save(user);
-		return "redirect:/";
-	}
 }

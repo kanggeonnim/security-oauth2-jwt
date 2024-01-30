@@ -1,7 +1,5 @@
 package com.example.springsecurity3.jwt;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.example.springsecurity3.config.auth.PrincipalDetails;
 import com.example.springsecurity3.dto.GeneratedToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,20 +7,16 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-
 import java.io.IOException;
-import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
 public class JwtSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtUtil jwtUtil;
-    private final JwtProperties jwtProperties;
     private final ObjectMapper objectMapper;
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -30,7 +24,10 @@ public class JwtSuccessHandler implements AuthenticationSuccessHandler {
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
 
         GeneratedToken token =
-                jwtUtil.generateToken(principalDetails.getUser().getUsername(), principalDetails.getUser().getRole());
+                jwtUtil.generateToken(
+                        principalDetails.getUser().getUsername(),
+                        objectMapper.writeValueAsString(principalDetails.getUser().getAuthorityList())
+                );
 
         // body를 통해 access token과 refresh token 전달
         String result = objectMapper.writeValueAsString(token);

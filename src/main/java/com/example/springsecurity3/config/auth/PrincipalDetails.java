@@ -8,6 +8,7 @@ import com.example.springsecurity3.dto.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.transaction.annotation.Transactional;
 
 // Authentication 객체에 저장할 수 있는 유일한 타입
 public class PrincipalDetails implements UserDetails, OAuth2User{
@@ -33,7 +34,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User{
 
 	@Override
 	public String getPassword() {
-		return user.getPassword();
+		return null;
 	}
 
 	@Override
@@ -63,9 +64,11 @@ public class PrincipalDetails implements UserDetails, OAuth2User{
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		Collection<GrantedAuthority> collet = new ArrayList<GrantedAuthority>();
-		collet.add(()->{ return user.getRole();});
-		return collet;
+		Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+		user.getAuthorityList().forEach(r->{
+			authorities.add(() -> r.getRole());
+		});
+		return authorities;
 	}
 
 	// 리소스 서버로 부터 받는 회원정보

@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.nimbusds.oauth2.sdk.TokenIntrospectionSuccessResponse;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -49,6 +51,21 @@ public class User {
 	@Column(nullable = false)
 	private String providerId;
 
-	@OneToMany(mappedBy = "role")
-	private List<UserAuthority> roles = new ArrayList<>();
+	@JsonManagedReference
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+	private List<UserAuthority> authorityList = new ArrayList<>();
+
+	@Builder
+	public User(String username, String userNickname, String email, String provider, String providerId, List<UserAuthority> roles) {
+		this.username = username;
+		this.userNickname = userNickname;
+		this.email = email;
+		this.provider = provider;
+		this.providerId = providerId;
+	}
+
+	public void addAuthority(UserAuthority userAuthority) {
+		authorityList.add(userAuthority);
+		userAuthority.setUser(this);
+	}
 }

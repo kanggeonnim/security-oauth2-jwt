@@ -6,19 +6,22 @@ import java.util.Optional;
 import com.example.springsecurity3.config.auth.PrincipalDetails;
 import com.example.springsecurity3.config.oauth.provider.*;
 import com.example.springsecurity3.dto.User;
+import com.example.springsecurity3.dto.UserAuthority;
 import com.example.springsecurity3.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
-	@Autowired
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 
 	// userRequest 는 code를 받아서 accessToken을 응답 받은 객체
 	@Override
@@ -39,41 +42,34 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 		OAuth2UserInfo oAuth2UserInfo = null;
 		if (userRequest.getClientRegistration().getRegistrationId().equals("google")) {
 			System.out.println("구글 로그인 요청");
-			System.out.println(oAuth2User.getAttributes());
 			oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
 		} else if (userRequest.getClientRegistration().getRegistrationId().equals("kakao")) {
 			System.out.println("카카오 로그인 요청");
-//			System.out.println(((Map)oAuth2User.getAttributes().get("properties")));
-//			System.out.println(((Map)oAuth2User.getAttributes().get("kakao_account")));
-//			System.out.println(((Map)((Map)oAuth2User.getAttributes().get("properties")).get("kakao_account")).get("email"));
 			oAuth2UserInfo = new KakaoUserInfo((Map)oAuth2User.getAttributes());
-		} else {
-			System.out.println("우리는 구글과 페이스북만 지원해요 ㅎㅎ");
 		}
 
-		//System.out.println("oAuth2UserInfo.getProvider() : " + oAuth2UserInfo.getProvider());
-		//System.out.println("oAuth2UserInfo.getProviderId() : " + oAuth2UserInfo.getProviderId());
-		Optional<User> userOptional =
+		Optional<User> user =
 				userRepository.findByProviderAndProviderId(oAuth2UserInfo.getProvider(), oAuth2UserInfo.getProviderId());
-		
-		User user;
-		if (userOptional.isPresent()) {
-			user = userOptional.get();
-			// user가 존재하면 update 해주기
-			user.setEmail(oAuth2UserInfo.getEmail());
-			userRepository.save(user);
-		} else {
-			// user의 패스워드가 null이기 때문에 OAuth 유저는 일반적인 로그인을 할 수 없음.
-			user = User.builder()
-					.username(oAuth2UserInfo.getProvider() + "_" + oAuth2UserInfo.getProviderId())
-					.email(oAuth2UserInfo.getEmail())
+
+		if (user.isEmpty()) {
+			// 신규 회원가입
+			user = Optional.of(User.builder()
+                    .username(oAuth2UserInfo.getProvider() + "_" + oAuth2UserInfo.getProviderId())
+					.userNickname(oAuth2UserInfo.getProvider() + "_" + oAuth2UserInfo.getProviderId())
+                    .email(oAuth2UserInfo.getEmail())
+                    .provider(oAuth2UserInfo.getProvider())
+                    .providerId(oAuth2UserInfo.getProviderId())
+                    .build());
+
+			UserAuthority auth = UserAuthority.builder()
+					.user(user.get())
 					.role("ROLE_USER")
-					.provider(oAuth2UserInfo.getProvider())
-					.providerId(oAuth2UserInfo.getProviderId())
 					.build();
-			userRepository.save(user);
+
+			user.get().addAuthority(auth);
+			userRepository.save(user.get());
 		}
 
-		return new PrincipalDetails(user, oAuth2User.getAttributes());
+		return new PrincipalDetails(user.get(), oAuth2User.getAttributes());
 	}
 }
