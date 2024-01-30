@@ -1,34 +1,54 @@
 package com.example.springsecurity3.dto;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 // ORM - Object Relation Mapping
 
-@Builder
-@Data
+
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@EqualsAndHashCode(of = "id")
 @Table(name = "users")
 public class User {
-	@Id // primary key
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	@Column(nullable = false)
 	private String username;
-	private String password;
+
+	@Column(nullable = true)
+	private String userImage;
+
+	@Column(nullable = false)
+	private String userNickname;
+
+	@Column(nullable = true)
 	private String email;
-	private String role; //ROLE_USER, ROLE_ADMIN
-	// OAuth를 위해 구성한 추가 필드 2개
-	private String provider;
-	private String providerId;
+
+	@Column(nullable = true)
+	private String userPhone;
+
+	@Column(nullable = true)
+	private String userInfo;
+
 	@CreationTimestamp
-	private Timestamp createDate;
+	private Timestamp createAt;
+
+	@Column(nullable = false)
+	private String provider;
+
+	@Column(nullable = false)
+	private String providerId;
+
+	@OneToMany(mappedBy = "role")
+	private List<UserAuthority> roles = new ArrayList<>();
 }

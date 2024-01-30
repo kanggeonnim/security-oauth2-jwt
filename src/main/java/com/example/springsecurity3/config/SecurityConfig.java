@@ -3,21 +3,16 @@ package com.example.springsecurity3.config;
 import com.example.springsecurity3.config.oauth.PrincipalOauth2UserService;
 import com.example.springsecurity3.jwt.JwtAuthorizationFilter;
 import com.example.springsecurity3.jwt.JwtSuccessHandler;
-import com.example.springsecurity3.jwt.JwtUtil;
 import com.example.springsecurity3.jwt.MyAuthenticationFailureHandler;
-import com.example.springsecurity3.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
-import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration // IoC 빈(bean)을 등록

@@ -14,7 +14,7 @@ public class OptionalControllerTest {
 	private UserRepository userRepository;
 	
 	@GetMapping("/test/user/{id}")
-	public User 옵셔널_유저찾기(@PathVariable int id) {
+	public User 옵셔널_유저찾기(@PathVariable Long id) {
 //		Optional<User> userOptional = userRepository.findById(id);
 //		User user;
 //		if(userOptional.isPresent()) {

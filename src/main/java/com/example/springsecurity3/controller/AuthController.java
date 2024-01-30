@@ -3,7 +3,6 @@ package com.example.springsecurity3.controller;
 import com.example.springsecurity3.dto.StatusResponseDto;
 import com.example.springsecurity3.dto.response.TokenResponseStatus;
 import com.example.springsecurity3.service.RefreshTokenService;
-import com.example.springsecurity3.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
