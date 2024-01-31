@@ -5,6 +5,8 @@ import java.util.Iterator;
 import com.example.springsecurity3.config.auth.PrincipalDetails;
 import com.example.springsecurity3.dto.User;
 import com.example.springsecurity3.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,13 +19,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
+@Slf4j
+@RequiredArgsConstructor
 public class IndexController {
 
-	@Autowired
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	@GetMapping({ "", "/" })
 	public @ResponseBody String index() {
@@ -33,14 +35,14 @@ public class IndexController {
 	@GetMapping("/user")
 	@Transactional
 	public @ResponseBody String user(@AuthenticationPrincipal PrincipalDetails principal) {
-		System.out.println("Principal : " + principal.getAuthorities());
-		System.out.println("Principal : " + principal.getUser().get);
-		System.out.println("OAuth2 : "+principal.getUser().getProvider());
+		log.info("Principal : " + principal.getAuthorities());
+		log.info("Principal : " + principal.getUser().getAuthorities());
+		log.info("OAuth2 : "+principal.getUser().getProvider());
 		// iterator 순차 출력 해보기
 		Iterator<? extends GrantedAuthority> iter = principal.getAuthorities().iterator();
 		while (iter.hasNext()) {
 			GrantedAuthority auth = iter.next();
-			System.out.println(auth.getAuthority());
+			log.info(auth.getAuthority());
 		}
 
 		return "유저 페이지입니다.";
@@ -61,7 +63,7 @@ public class IndexController {
 
 	@GetMapping("/login")
 	public String login() {
-		return "login";
+		return "login.html";
 	}
 
 	@GetMapping("/join")

@@ -18,19 +18,14 @@ public class UserAuthority {
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(nullable = false)
     private String role;
 
     @Builder
-    public UserAuthority(User user, String role) {
+    public UserAuthority(User user,String role) {
         this.user = user;
         this.role = role;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }

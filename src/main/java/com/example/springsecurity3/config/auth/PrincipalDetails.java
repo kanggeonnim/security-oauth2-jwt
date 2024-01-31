@@ -5,12 +5,14 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.example.springsecurity3.dto.User;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.transaction.annotation.Transactional;
 
 // Authentication 객체에 저장할 수 있는 유일한 타입
+@ToString
 public class PrincipalDetails implements UserDetails, OAuth2User{
 
 	private static final long serialVersionUID = 1L;
@@ -65,7 +67,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User{
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		user.getAuthorityList().forEach(r->{
+		user.getAuthorities().forEach(r->{
 			authorities.add(() -> r.getRole());
 		});
 		return authorities;

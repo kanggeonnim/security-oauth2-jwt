@@ -7,6 +7,7 @@ import com.example.springsecurity3.config.auth.PrincipalDetails;
 import com.example.springsecurity3.config.oauth.provider.*;
 import com.example.springsecurity3.dto.User;
 import com.example.springsecurity3.dto.UserAuthority;
+import com.example.springsecurity3.repository.UserAuthorityRepository;
 import com.example.springsecurity3.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
 	private final UserRepository userRepository;
+	private final UserAuthorityRepository userAuthorityRepository;
 
 	// userRequest 는 code를 받아서 accessToken을 응답 받은 객체
 	@Override
@@ -66,8 +69,8 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 					.role("ROLE_USER")
 					.build();
 
-			user.get().addAuthority(auth);
 			userRepository.save(user.get());
+			userAuthorityRepository.save(auth);
 		}
 
 		return new PrincipalDetails(user.get(), oAuth2User.getAttributes());

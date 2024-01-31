@@ -52,8 +52,8 @@ public class User {
 	private String providerId;
 
 	@JsonManagedReference
-	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-	private List<UserAuthority> authorityList = new ArrayList<>();
+	@OneToMany(mappedBy = "user")
+	private List<UserAuthority> authorities = new ArrayList<>();
 
 	@Builder
 	public User(String username, String userNickname, String email, String provider, String providerId, List<UserAuthority> roles) {
@@ -62,10 +62,5 @@ public class User {
 		this.email = email;
 		this.provider = provider;
 		this.providerId = providerId;
-	}
-
-	public void addAuthority(UserAuthority userAuthority) {
-		authorityList.add(userAuthority);
-		userAuthority.setUser(this);
 	}
 }

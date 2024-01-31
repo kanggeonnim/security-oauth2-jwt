@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtUtil jwtUtil;
@@ -23,10 +25,12 @@ public class JwtSuccessHandler implements AuthenticationSuccessHandler {
         System.out.println("successfullAuthentication 실행됨.");
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
 
+        log.info("principal : {}", principalDetails);
+        log.info("user : {}, list : {} ", principalDetails.getUser(), principalDetails.getUser().getAuthorities());
         GeneratedToken token =
                 jwtUtil.generateToken(
                         principalDetails.getUser().getUsername(),
-                        objectMapper.writeValueAsString(principalDetails.getUser().getAuthorityList())
+                        objectMapper.writeValueAsString(principalDetails.getUser().getAuthorities())
                 );
 
         // body를 통해 access token과 refresh token 전달
